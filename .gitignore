@@ -1,0 +1,9 @@
+target/
+.idea/
+maven-local
+logs/
+
+dependency-reduced-pom.xml
+*.iml
+*.log
+*.out

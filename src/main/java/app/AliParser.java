@@ -31,5 +31,6 @@ public class AliParser {
         }
         Document document = optionalDocument.get();
 
+        /* Stop. this is not the right way because jsoup cannot work with js  */
     }
 }

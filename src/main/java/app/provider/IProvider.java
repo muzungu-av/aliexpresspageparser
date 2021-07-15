@@ -1,10 +1,13 @@
 package app.provider;
 
-import org.jsoup.nodes.Document;
+import app.provider.source.ISource;
 
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Implementing classes should be able to handle ResourceBundle and provide some ISource
+ */
 public interface IProvider {
-    Optional<Document> getDocument(ResourceBundle resourceBundle);
+    Optional<ISource> getSources(ResourceBundle resourceBundle);
 }

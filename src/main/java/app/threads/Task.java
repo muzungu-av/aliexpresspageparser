@@ -2,6 +2,7 @@ package app.threads;
 
 import app.chain.BaseChain;
 
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 /**
@@ -13,6 +14,7 @@ public class Task implements Callable<Integer> {
 
     /**
      * the Constructor
+     *
      * @param firstLink
      */
     public Task(BaseChain firstLink) {
@@ -21,12 +23,15 @@ public class Task implements Callable<Integer> {
 
     /**
      * The main method starts the entire chain for execution.
+     * Params in handleRequest method will be ignored.
+     *
      * @return number of processed entities.
      * @throws Exception
+     * @see app.chain.document.FileDocumentLoader
      */
     @Override
     public Integer call() throws Exception {
-        firstLink.handleRequest(new Object());
+        firstLink.handleRequest(Collections.emptyList(), String.class);
         Thread.sleep(500);
         return 1;
     }

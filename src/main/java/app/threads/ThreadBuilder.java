@@ -7,11 +7,14 @@ import app.chain.parser.FileParser;
 import app.chain.parser.IParser;
 import app.chain.parser.UrlParser;
 import app.provider.source.ISource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
+
 
 /**
  * Builds and runs tasks in the form of a Chain of Responsibilities.
@@ -19,16 +22,17 @@ import java.util.concurrent.*;
  * It depends on the ISource object in the constructor
  */
 public class ThreadBuilder {
-
+    private static final Logger logger = LoggerFactory.getLogger(ThreadBuilder.class);
     private ISource source;
     private ExecutorService executorService;
     private List<Future<Integer>> futures;
     private int countThreadsAndTask = 0;
-    private BaseChain documentLoader;
+    private BaseChain[] documentLoader;
     private IParser parser;
 
     /**
      * The Constructor
+     *
      * @param source An object implementing ISource with properties.
      */
     public ThreadBuilder(ISource source) {
@@ -41,25 +45,37 @@ public class ThreadBuilder {
      * Prepares the pool
      */
     private void prepareTasks() {
+        logger.info("Start to prepare tasks.");
         switch (source.getSourceType()) {
             case FILE: {
                 countThreadsAndTask = 1;
-                documentLoader = new FileDocumentLoader(source.getSources());
+                documentLoader = new FileDocumentLoader[countThreadsAndTask];
+                documentLoader[countThreadsAndTask - 1] = new FileDocumentLoader(source);
                 parser = new FileParser();
+                documentLoader[countThreadsAndTask - 1].setNext((BaseChain) parser);
                 break;
             }
             case URL: {
-                countThreadsAndTask = 5;
-                documentLoader = new UrlDocumentLoader(source.getSources());
-                parser = new UrlParser();
+                countThreadsAndTask = source.getSources().size();
+                documentLoader = new UrlDocumentLoader[countThreadsAndTask];
+                for (int j = 0; j <= countThreadsAndTask - 1; j++) {
+                    documentLoader[j] = new UrlDocumentLoader(source.getSources().get(j));
+                    parser = new UrlParser();
+                    documentLoader[j].setNext((BaseChain) parser);
+                }
                 break;
-            } default: return; //todo make throw
+            }
+            default: {
+                logger.error("Unknown resource type.");
+                return;
+            }
         }
-        documentLoader.setNext((BaseChain)parser);
 
         if (executorService != null) {
+            logger.error("ExecutorService was been null. Stop.");
             stopTasks();
         }
+        logger.info("Thread pool is configured for {} tasks.", countThreadsAndTask);
         executorService = Executors.newFixedThreadPool(countThreadsAndTask);
         futures = new ArrayList<>();
     }
@@ -69,14 +85,16 @@ public class ThreadBuilder {
      */
     public void runTasks() {
         prepareTasks();
-        for (int i = 0; i < countThreadsAndTask; i++) {
-            Callable<Integer> task = new Task(documentLoader);
+        logger.info("Tasks start.");
+        for (int i = 0; i <= countThreadsAndTask - 1; i++) {
+            Callable<Integer> task = new Task(documentLoader[i]);
             futures.add(executorService.submit(task));
         }
     }
 
     /**
      * Checks if all threads are stopped
+     *
      * @return boolean if all threads have stopped it will return true
      */
     public boolean allTasksIsDone() {
@@ -84,14 +102,16 @@ public class ThreadBuilder {
         for (Future<Integer> future : futures) {
             allDone &= future.isDone();
         }
+        logger.info("Completion status of all tasks is {}.", Boolean.toString(allDone).toUpperCase());
         return allDone;
     }
 
     /**
      * Traversing and getting the results of all tasks.
+     *
      * @return Optional<Integer> If all tasks are completed,
-     *         then this is the total amount of goods that were received.
-     *         Otherwise it is null.
+     * then this is the total amount of goods that were received.
+     * Otherwise it is null.
      */
     public Optional<Integer> getAllResults() {
         if (!allTasksIsDone()) {
@@ -112,7 +132,6 @@ public class ThreadBuilder {
      * Allows threads to stop or stops them forcibly.
      */
     public void stopTasks() {
-        /* правильная остановка */
         executorService.shutdown();
         try {
             if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -121,7 +140,8 @@ public class ThreadBuilder {
         } catch (InterruptedException e) {
             executorService.shutdownNow();
         }
-        System.out.println("Threads were stoped");
+        logger.info("Threads were stoped");
+
     }
 
 }

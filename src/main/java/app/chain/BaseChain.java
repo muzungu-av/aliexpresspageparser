@@ -1,5 +1,7 @@
 package app.chain;
 
+import java.util.List;
+
 /**
  * Abstract base class of the Chain of Responsibilities pattern.
  * The extended classes must call the H() method at the end of their work
@@ -11,12 +13,11 @@ public abstract class BaseChain implements IChain {
 
     /**
      * Searches for the Next one and passes control to it.
-     * @param request
      */
     @Override
-    public void handleRequest(Object request) {
+    public void handleRequest(List<?> somelist, Class<?> clazz) {
         if (this.next != null) {
-            this.next.handleRequest(request);
+            this.next.handleRequest(somelist, clazz);
         }
     }
 

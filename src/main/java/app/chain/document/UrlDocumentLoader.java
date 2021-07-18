@@ -1,10 +1,7 @@
 package app.chain.document;
 
 import app.chain.BaseChain;
-import app.provider.source.ISource;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -48,15 +45,21 @@ public class UrlDocumentLoader extends BaseChain implements IDocumentLoader {
     }
 
     /**
-     * Executes a GET request receives a response as json
+     * Redirects to another method,
+     * the presence of this method requires the interface.
      *
-     * @return
+     * @return true is document was loaded.
      */
     @Override
     public boolean loadDocument() {
         return sendGetRequest();
     }
 
+    /**
+     * Executes a GET request receives a response as json.
+     *
+     * @return true is document was loaded.
+     */
     private boolean sendGetRequest() {
         logger.info("Loading a document from the URL {}", this.sourcePath);
         HttpGet request = new HttpGet(this.sourcePath);

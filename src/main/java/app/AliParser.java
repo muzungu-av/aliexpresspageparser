@@ -6,11 +6,6 @@ import app.provider.source.ISource;
 import app.accumulator.ConcurrentSetWorker;
 import app.threads.ThreadBuilder;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -72,8 +67,8 @@ public class AliParser {
 
         threadBuilder.stopTasks();
 
-//        IWriter fileWriter = new CsvFileWriter();
-//        fileWriter.write(ConcurrentSetWorker.getCollection());
+        IWriter fileWriter = new CsvFileWriter();
+        fileWriter.write(ConcurrentSetWorker.getCollection());
 
         date = sdf.format(new Date());
         logger.info("Completed. ({})", date);

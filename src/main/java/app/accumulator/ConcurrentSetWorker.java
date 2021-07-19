@@ -1,6 +1,5 @@
 package app.accumulator;
 
-import app.chain.BaseChain;
 import app.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * A static class that works (adds) with ConcurrentSkipListSet.
  */
-public class ConcurrentSetWorker extends BaseChain {
+public class ConcurrentSetWorker {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentSetWorker.class);
 

@@ -1,7 +1,6 @@
 package app.chain.parser;
 
 import app.chain.BaseChain;
-import app.chain.document.FileDocumentLoader;
 import app.model.Product;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,23 +17,28 @@ import java.util.stream.Collectors;
  * Converts a collection of strings to a collection of Products.
  */
 public class UrlParser extends BaseChain implements IParser {
-    private static final Logger logger = LoggerFactory.getLogger(FileDocumentLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(UrlParser.class);
 
     private List<Product> listProduct;
 
     /**
      * The method calls the execution of the main work and then passes control to the following classes.
+     *
+     * @param someList List of objects that will be filtered by the second parameter
+     * @param clazz    Class type
+     * @return number of processed elements.
      */
-    public void handleRequest(List<?> somelist, Class<?> clazz) {
-        List<String> content = somelist.stream()
+    public int handleRequest(List<?> someList, Class<?> clazz) {
+        List<String> content = someList.stream()
                 .filter(clazz::isInstance)
                 .map(element -> (String) element)
                 .collect(Collectors.toList());
         if (parse(content)) {
             logger.info("Parse succesful.");
-            super.handleRequest(listProduct, clazz);
+            return super.handleRequest(listProduct, Product.class);
         } else {
             logger.error("Parsing failed, nothing to do.");
+            return 0;
         }
     }
 
@@ -66,7 +70,8 @@ public class UrlParser extends BaseChain implements IParser {
         try {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             jsonNode = objectMapper.readTree(joinedJsonString).get("results");
-            listProduct = objectMapper.readValue(jsonNode.toString(), new TypeReference<List<Product>>() {});
+            listProduct = objectMapper.readValue(jsonNode.toString(), new TypeReference<List<Product>>() {
+            });
         } catch (JsonProcessingException e) {
             logger.error("Don't can read jsonNode from string: {}", e.getMessage());
             return false;

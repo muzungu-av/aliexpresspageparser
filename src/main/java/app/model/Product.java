@@ -186,4 +186,19 @@ public class Product {
     public void setItemEvalTotalNum(String itemEvalTotalNum) {
         this.itemEvalTotalNum = itemEvalTotalNum;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        return getProductId().equals(product.getProductId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getProductId().hashCode();
+    }
 }

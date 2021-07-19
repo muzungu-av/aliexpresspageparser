@@ -3,7 +3,7 @@ package app.model;
 /**
  * Products pojo class
  */
-public class Product {
+public class Product implements Comparable<Product>{
     private String productId;
     private String sellerId;
     private String oriMinPrice;
@@ -24,8 +24,6 @@ public class Product {
     private String productPositiveRate;
     private String productAverageStar;
     private String itemEvalTotalNum;
-
-    public Product() {}
 
     public String getProductId() {
         return productId;
@@ -200,5 +198,34 @@ public class Product {
     @Override
     public int hashCode() {
         return getProductId().hashCode();
+    }
+
+    @Override
+    public int compareTo(Product product) {
+        return this.productId
+                .compareTo(product.getProductId());
+    }
+
+    @Override
+    public String toString() {
+        return this.productId.concat("|").concat(this.productTitle)
+                .concat("|").concat(this.sellerId)
+                .concat("|").concat(this.oriMinPrice)
+                .concat("|").concat(this.oriMaxPrice)
+                .concat("|").concat(this.promotionId)
+                .concat("|").concat(this.startTime)
+                .concat("|").concat(this.endTime)
+                .concat("|").concat(this.phase)
+                .concat("|").concat(this.minPrice)
+                .concat("|").concat(this.maxPrice)
+                .concat("|").concat(this.discount)
+                .concat("|").concat(this.orders)
+                .concat("|").concat(this.productImage)
+                .concat("|").concat(this.productDetailUrl)
+                .concat("|").concat(this.shopUrl)
+                .concat("|").concat(this.totalTranpro3)
+                .concat("|").concat(this.productPositiveRate)
+                .concat("|").concat(this.productAverageStar)
+                .concat("|").concat(this.itemEvalTotalNum);
     }
 }

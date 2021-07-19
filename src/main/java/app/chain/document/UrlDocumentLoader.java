@@ -33,14 +33,22 @@ public class UrlDocumentLoader extends BaseChain implements IDocumentLoader {
 
     /**
      * The method calls the execution of the main work and then passes control to the following classes.
+     * Note:
+     * It unused parameters, because nothing is passed to the first object in the chain,
+     * but the interface requires these parameters.
+     *
+     * @param ignored1 unused List parameter.
+     * @param ignored2 unused Class type parameter.
+     * @return number of processed elements.
      */
-    public void handleRequest(List<?> ignored1, Class<?> ignored2) {
+    public int handleRequest(List<?> ignored1, Class<?> ignored2) {
         if (loadDocument()) {
             logger.info("Successfully loaded URL-document.");
             logger.info("Transfer control to the Next.");
-            super.handleRequest(readedLines, String.class);
+            return super.handleRequest(readedLines, String.class);
         } else {
             logger.error("Failed to load URL-documents.");
+            return 0;
         }
     }
 

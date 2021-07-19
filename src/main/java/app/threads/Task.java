@@ -15,7 +15,7 @@ public class Task implements Callable<Integer> {
     /**
      * the Constructor
      *
-     * @param firstLink
+     * @param firstLink The first class to start.
      */
     public Task(BaseChain firstLink) {
         this.firstLink = firstLink;
@@ -26,13 +26,11 @@ public class Task implements Callable<Integer> {
      * Params in handleRequest method will be ignored.
      *
      * @return number of processed entities.
-     * @throws Exception
      * @see app.chain.document.FileDocumentLoader
+     * @see app.chain.document.UrlDocumentLoader
      */
     @Override
-    public Integer call() throws Exception {
-        firstLink.handleRequest(Collections.emptyList(), String.class);
-        Thread.sleep(500);
-        return 1;
+    public Integer call() {
+        return firstLink.handleRequest(Collections.emptyList(), String.class);
     }
 }

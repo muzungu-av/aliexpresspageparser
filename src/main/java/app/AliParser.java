@@ -3,13 +3,21 @@ package app;
 import app.provider.IProvider;
 import app.provider.ProviderConstructor;
 import app.provider.source.ISource;
+import app.accumulator.ConcurrentSetWorker;
 import app.threads.ThreadBuilder;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import app.writer.CsvFileWriter;
+import app.writer.IWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,23 +50,30 @@ public class AliParser {
         }
         aliParser.source = optionalSources.get();
         logger.info("Resource found - {}", aliParser.source.getSourceType().toString());
-
         ThreadBuilder threadBuilder = new ThreadBuilder(aliParser.source);
-        threadBuilder.runTasks();
 
         logger.info("Waiting when tasks are finished...");
-        while (!threadBuilder.allTasksIsDone()) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ignored) {
+        do {
+            threadBuilder.runTasks();
+            while (!threadBuilder.allTasksIsDone()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {
+                }
             }
-        }
+        } while (ConcurrentSetWorker.getCount() < 100);
+
         logger.info("Trying to get results...");
+        logger.info("Collected all items in the collection: {}", ConcurrentSetWorker.getCount());
         Optional<Integer> summ = threadBuilder.getAllResults();
         if (summ.isPresent()) {
-            System.out.println("RESULT = " + summ.get());
+            logger.info("Total processed products: {}", summ.get());
         }
+
         threadBuilder.stopTasks();
+
+//        IWriter fileWriter = new CsvFileWriter();
+//        fileWriter.write(ConcurrentSetWorker.getCollection());
 
         date = sdf.format(new Date());
         logger.info("Completed. ({})", date);

@@ -13,16 +13,19 @@ public abstract class BaseChain implements IChain {
 
     /**
      * Searches for the Next one and passes control to it.
+     *
+     * @return
      */
     @Override
-    public void handleRequest(List<?> somelist, Class<?> clazz) {
+    public int handleRequest(List<?> somelist, Class<?> clazz) {
         if (this.next != null) {
-            this.next.handleRequest(somelist, clazz);
-        }
+            return this.next.handleRequest(somelist, clazz);
+        } else return 0;
     }
 
     /**
      * Configures the next one.
+     *
      * @param next IChain extended class.
      */
     @Override

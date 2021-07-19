@@ -8,7 +8,7 @@ import java.util.List;
  */
 public interface IChain {
 
-    void handleRequest(List<?> soumList, Class<?> clazz);
+    int handleRequest(List<?> soumList, Class<?> clazz);
 
     void setNext(IChain next);
 }

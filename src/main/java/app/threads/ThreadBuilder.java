@@ -1,5 +1,6 @@
 package app.threads;
 
+import app.accumulator.ConcurentSetFiller;
 import app.chain.BaseChain;
 import app.chain.document.FileDocumentLoader;
 import app.chain.document.UrlDocumentLoader;
@@ -28,7 +29,6 @@ public class ThreadBuilder {
     private List<Future<Integer>> futures;
     private int countThreadsAndTask = 0;
     private BaseChain[] documentLoader;
-    private IParser parser;
 
     /**
      * The Constructor
@@ -51,7 +51,7 @@ public class ThreadBuilder {
                 countThreadsAndTask = 1;
                 documentLoader = new FileDocumentLoader[countThreadsAndTask];
                 documentLoader[countThreadsAndTask - 1] = new FileDocumentLoader(source);
-                parser = new FileParser();
+                IParser parser = new FileParser();
                 documentLoader[countThreadsAndTask - 1].setNext((BaseChain) parser);
                 break;
             }
@@ -60,8 +60,10 @@ public class ThreadBuilder {
                 documentLoader = new UrlDocumentLoader[countThreadsAndTask];
                 for (int j = 0; j <= countThreadsAndTask - 1; j++) {
                     documentLoader[j] = new UrlDocumentLoader(source.getSources().get(j));
-                    parser = new UrlParser();
+                    IParser parser = new UrlParser();
                     documentLoader[j].setNext((BaseChain) parser);
+                    ConcurentSetFiller setFiller = new ConcurentSetFiller();
+                    ((BaseChain) parser).setNext(setFiller);
                 }
                 break;
             }
@@ -102,7 +104,6 @@ public class ThreadBuilder {
         for (Future<Integer> future : futures) {
             allDone &= future.isDone();
         }
-        logger.info("Completion status of all tasks is {}.", Boolean.toString(allDone).toUpperCase());
         return allDone;
     }
 
@@ -117,12 +118,13 @@ public class ThreadBuilder {
         if (!allTasksIsDone()) {
             return Optional.empty();
         }
+        logger.info("Completion status of all tasks is TRUE.");
         int summ = 0;
         for (Future<Integer> future : futures) {
             try {
                 summ += (int) future.get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                logger.error("Some problem when run getAllResults() method: {}", e.getMessage());
             }
         }
         return Optional.of(summ);

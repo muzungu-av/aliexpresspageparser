@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class AliParser {
     private static final Logger logger = LoggerFactory.getLogger(AliParser.class);
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final ResourceBundle resourceBundle = ResourceBundle.getBundle("app");
     private IProvider provider;
     private ISource source;
 
@@ -27,7 +28,6 @@ public class AliParser {
         logger.info("Application started. ({})", date);
 
         AliParser aliParser = new AliParser();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("app");
         String target = resourceBundle.getString("target");
         ProviderConstructor providerConstructor = new ProviderConstructor();
         try {
@@ -56,7 +56,11 @@ public class AliParser {
                 } catch (InterruptedException ignored) {
                 }
             }
-        } while (ConcurrentSetWorker.getCount() < 100);
+        }
+        /*Because the products were sometimes repeated (when URL loading),
+          we continue to download again until we get 100 unique*/
+        while (resourceBundle.getString("target").toLowerCase().equals("url")
+                && ConcurrentSetWorker.getCount() < 100);
 
         logger.info("Trying to get results...");
         logger.info("Collected all items in the collection: {}", ConcurrentSetWorker.getCount());

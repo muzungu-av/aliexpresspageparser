@@ -47,7 +47,7 @@ public class UrlParser extends BaseChain implements IParser {
      * Before parsing, concatenates all lines because it is not known whether it was one line or several
      *
      * @param jsonContent List of String with some json content.
-     * @return List of prepared Products objects.
+     * @return The fact of successful parsing.
      */
     @Override
     public boolean parse(List<String> jsonContent) {

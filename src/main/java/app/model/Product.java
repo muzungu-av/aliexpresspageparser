@@ -3,7 +3,7 @@ package app.model;
 /**
  * Products pojo class
  */
-public class Product implements Comparable<Product>{
+public class Product implements Comparable<Product> {
     private String productId;
     private String sellerId;
     private String oriMinPrice;
@@ -24,6 +24,7 @@ public class Product implements Comparable<Product>{
     private String productPositiveRate;
     private String productAverageStar;
     private String itemEvalTotalNum;
+    private String claimed;
 
     public String getProductId() {
         return productId;
@@ -185,13 +186,19 @@ public class Product implements Comparable<Product>{
         this.itemEvalTotalNum = itemEvalTotalNum;
     }
 
+    public String getClaimed() {
+        return claimed;
+    }
+
+    public void setClaimed(String claimed) {
+        this.claimed = claimed;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Product product = (Product) o;
-
         return getProductId().equals(product.getProductId());
     }
 
@@ -206,26 +213,36 @@ public class Product implements Comparable<Product>{
                 .compareTo(product.getProductId());
     }
 
+
+    /**
+     * Displays a string only those fields that exist.
+     *
+     * @return Delimited string.
+     */
     @Override
     public String toString() {
-        return this.productId.concat("|").concat(this.productTitle)
-                .concat("|").concat(this.sellerId)
-                .concat("|").concat(this.oriMinPrice)
-                .concat("|").concat(this.oriMaxPrice)
-                .concat("|").concat(this.promotionId)
-                .concat("|").concat(this.startTime)
-                .concat("|").concat(this.endTime)
-                .concat("|").concat(this.phase)
-                .concat("|").concat(this.minPrice)
-                .concat("|").concat(this.maxPrice)
-                .concat("|").concat(this.discount)
-                .concat("|").concat(this.orders)
-                .concat("|").concat(this.productImage)
-                .concat("|").concat(this.productDetailUrl)
-                .concat("|").concat(this.shopUrl)
-                .concat("|").concat(this.totalTranpro3)
-                .concat("|").concat(this.productPositiveRate)
-                .concat("|").concat(this.productAverageStar)
-                .concat("|").concat(this.itemEvalTotalNum);
+        NullStringReplacer replacer = new NullStringReplacer();
+        return replacer.apply(productId)
+                .concat(replacer.apply(productTitle))
+                .concat(replacer.apply(sellerId))
+                .concat(replacer.apply(oriMinPrice))
+                .concat(replacer.apply(oriMaxPrice))
+                .concat(replacer.apply(promotionId))
+                .concat(replacer.apply(startTime))
+                .concat(replacer.apply(endTime))
+                .concat(replacer.apply(phase))
+                .concat(replacer.apply(minPrice))
+                .concat(replacer.apply(maxPrice))
+                .concat(replacer.apply(discount))
+                .concat(replacer.apply(orders))
+                .concat(replacer.apply(productImage))
+                .concat(replacer.apply(productDetailUrl))
+                .concat(replacer.apply(shopUrl))
+                .concat(replacer.apply(totalTranpro3))
+                .concat(replacer.apply(productPositiveRate))
+                .concat(replacer.apply(productAverageStar))
+                .concat(replacer.apply(itemEvalTotalNum))
+                .concat(replacer.apply(claimed));
     }
 }
+

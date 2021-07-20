@@ -35,16 +35,16 @@ public class FileDocumentLoader extends BaseChain implements IDocumentLoader {
      * The method calls the execution of the main work and then passes control to the following classes.
      * The parameters in the handleRequest method will be ignored.
      * So because the first class of the chain of responsibilities does not need any parameters.
-     * @return
+     * @return number of processed elements.
      */
     public int handleRequest(List<?> ignored1, Class<?> ignored2) {
         logger.info("Start uploading documents:");
         source.getSources().forEach(doc -> logger.info("   ->{}", doc));
         if (loadDocument()) {
-            logger.info("Successfully");
+            logger.info("Successfully loaded document.");
             return super.handleRequest(readedLines, String.class);
         } else {
-            logger.info("Failed to upload documents.");
+            logger.info("Failed to load documents.");
             return 0;
         }
     }
@@ -52,7 +52,7 @@ public class FileDocumentLoader extends BaseChain implements IDocumentLoader {
     /**
      * Reads a html-document from a file.
      *
-     * @return
+     * @return True if there was a successful download.
      */
     @Override
     public boolean loadDocument() {

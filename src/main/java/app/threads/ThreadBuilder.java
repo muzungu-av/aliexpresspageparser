@@ -53,6 +53,8 @@ public class ThreadBuilder {
                 documentLoader[countThreadsAndTask - 1] = new FileDocumentLoader(source);
                 IParser parser = new FileParser();
                 documentLoader[countThreadsAndTask - 1].setNext((BaseChain) parser);
+                ConcurentSetFiller setFiller = new ConcurentSetFiller();
+                ((BaseChain) parser).setNext(setFiller);
                 break;
             }
             case URL: {
